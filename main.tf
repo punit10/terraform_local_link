@@ -3,9 +3,9 @@
 ##################################################################################
 
 provider "aws" {
-  access_key = "ACCESS_KEY"
-  secret_key = "SECRET_KEY"
-  region     = "us-east-1"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+  region     = var.aws_region
 }
 
 ##################################################################################
@@ -22,20 +22,21 @@ data "aws_ssm_parameter" "amzn2_linux" {
 
 # NETWORKING #
 resource "aws_vpc" "app" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_hostnames = var.enable_dns_hostnames
+  tags                 = local.common_tags
 }
 
 resource "aws_internet_gateway" "app" {
   vpc_id = aws_vpc.app.id
-
+  tags   = local.common_tags
 }
 
 resource "aws_subnet" "public_subnet1" {
-  cidr_block              = "10.0.0.0/24"
+  cidr_block              = var.vpc_public_subnet1_cidr_block
   vpc_id                  = aws_vpc.app.id
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = var.map_public_ip_on_launch
+  tags                    = local.common_tags
 }
 
 # ROUTING #
@@ -58,6 +59,7 @@ resource "aws_route_table_association" "app_subnet1" {
 resource "aws_security_group" "nginx_sg" {
   name   = "nginx_sg"
   vpc_id = aws_vpc.app.id
+  tags   = local.common_tags
 
   # HTTP access from anywhere
   ingress {
@@ -79,11 +81,11 @@ resource "aws_security_group" "nginx_sg" {
 # INSTANCES #
 resource "aws_instance" "nginx1" {
   ami                    = nonsensitive(data.aws_ssm_parameter.amzn2_linux.value)
-  instance_type          = "t2.micro"
+  instance_type          = var.aws_instance_size.micro
   subnet_id              = aws_subnet.public_subnet1.id
   vpc_security_group_ids = [aws_security_group.nginx_sg.id]
-
-  user_data = <<EOF
+  tags                   = local.common_tags
+  user_data              = <<EOF
 #! /bin/bash
 sudo amazon-linux-extras install -y nginx1
 sudo service nginx start
