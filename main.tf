@@ -48,7 +48,7 @@ resource "aws_subnet" "public_subnet2" {
   vpc_id                  = aws_vpc.app.id
   map_public_ip_on_launch = var.map_public_ip_on_launch
   tags                    = local.common_tags
-  availability_zone       = data.aws_availability_zones.available.names[0]
+  availability_zone       = data.aws_availability_zones.available.names[1]
 }
 
 # ROUTING #
@@ -106,7 +106,7 @@ resource "aws_security_group" "lb_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access

@@ -37,7 +37,7 @@ variable "map_public_ip_on_launch" {
 variable "vpc_public_subnets_cidr_block" {
   type        = list(string)
   description = "Cidr block for Subnets of aws vpc"
-  default     = ["10.0.0.0/24", "10.0.0.1/24"]
+  default     = ["10.0.0.0/24", "10.0.1.0/24"]
 }
 
 variable "aws_instance_size" {
