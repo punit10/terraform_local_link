@@ -78,3 +78,15 @@ variable "billing_code" {
   type        = string
   description = "Billing code"
 }
+
+variable "naming_prefix" {
+  type        = string
+  description = "Naming prefix for company resources names"
+  default     = "local-link-app"
+}
+
+variable "environment" {
+  type        = string
+  description = "environment for which this config is created"
+  default     = "dev"
+}

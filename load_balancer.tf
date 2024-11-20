@@ -4,11 +4,11 @@ data "aws_elb_service_account" "root" {}
 
 # aws_lb
 resource "aws_lb" "nginx" {
-  name               = "locallinkapp"
+  name               = "${local.naming_prefix}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
-  subnets            = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+  subnets            = aws_subnet.public_subnets[*].id
   depends_on         = [aws_s3_bucket_policy.web_bucket_policy]
 
   #TODO web_bucket 
@@ -24,7 +24,7 @@ resource "aws_lb" "nginx" {
 
 # aws_lb_target_group
 resource "aws_lb_target_group" "nginx" {
-  name     = "nginx-alb-tg"
+  name     = "${local.naming_prefix}-alb-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.app.id
@@ -43,7 +43,7 @@ resource "aws_lb_listener" "nginx" {
     target_group_arn = aws_lb_target_group.nginx.arn
   }
 
-  tags = local.common_tags
+  tags = merge(local.common_tags, { Name = "${local.naming_prefix}-lb-listner" })
 }
 
 # aws_lb_target_group_attachment
