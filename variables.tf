@@ -22,6 +22,12 @@ variable "vpc_cidr_block" {
   default     = "10.0.0.0/16"
 }
 
+variable "vpc_public_subnet_count" {
+  type = number
+  description = "Number of Public subnet to create"
+  default = 2
+}
+
 variable "enable_dns_hostnames" {
   type        = bool
   description = "IS dns hostname enable"
@@ -48,6 +54,12 @@ variable "aws_instance_size" {
     small  = "t2.small"
     medium = "t2.medium"
   }
+}
+
+variable "ec2_instance_count" {
+  type = number
+  description = "Number of ec2 instance to create"
+  default = 2
 }
 
 # for local tags
