@@ -6,7 +6,7 @@ data "aws_ssm_parameter" "amzn2_linux" {
 
 # INSTANCES #
 resource "aws_instance" "nginx_servers" {
-  count = var.ec2_instance_count
+  count                  = var.ec2_instance_count
   ami                    = nonsensitive(data.aws_ssm_parameter.amzn2_linux.value)
   instance_type          = var.aws_instance_size.micro
   subnet_id              = aws_subnet.public_subnets[count.index].id

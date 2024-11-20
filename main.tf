@@ -36,13 +36,13 @@ resource "aws_internet_gateway" "app" {
 }
 
 resource "aws_subnet" "public_subnets" {
-  count = var.vpc_public_subnet_count
+  count                   = var.vpc_public_subnet_count
   cidr_block              = var.vpc_public_subnets_cidr_block[count.index]
   vpc_id                  = aws_vpc.app.id
   map_public_ip_on_launch = var.map_public_ip_on_launch
   availability_zone       = data.aws_availability_zones.available.names[count.index]
 
-  tags                    = local.common_tags
+  tags = local.common_tags
 }
 
 # ROUTING #
@@ -56,7 +56,7 @@ resource "aws_route_table" "app" {
 }
 
 resource "aws_route_table_association" "app_public_subnets" {
-  count = var.vpc_public_subnet_count
+  count          = var.vpc_public_subnet_count
   subnet_id      = aws_subnet.public_subnets[count.index].id
   route_table_id = aws_route_table.app.id
 }
