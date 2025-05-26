@@ -1,4 +1,7 @@
 # For the load balancer
+# aws_elb_service_account
+data "aws_elb_service_account" "root" {}
+
 # aws_lb
 resource "aws_lb" "nginx" {
   name               = "locallinkapp"
@@ -6,8 +9,15 @@ resource "aws_lb" "nginx" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
   subnets            = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+  depends_on         = [aws_s3_bucket_policy.web_bucket_policy]
 
+  #TODO web_bucket 
   enable_deletion_protection = false
+  access_logs {
+    bucket  = aws_s3_bucket.web_bucket.bucket
+    prefix  = "alb-logs"
+    enabled = true
+  }
 
   tags = local.common_tags
 }
